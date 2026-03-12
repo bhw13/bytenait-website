@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opticram: Adaptive Vocabulary Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050505;
+    --bg-card: #111111;
+    --bg-raised: #181818;
+    --text: #e8e8e8;
+    --text-muted: #6a6a6a;
+    --text-dim: #3a3a3a;
+    --green: #00ff6a;
+    --green-mid: #00cc55;
+    --green-dim: #004d20;
+    --amber: #ffb800;
+    --amber-dim: rgba(255,184,0,0.12);
+    --red: #ff4444;
+    --red-dim: rgba(255,68,68,0.15);
+    --blue: #4da6ff;
+    --blue-dim: rgba(77,166,255,0.12);
+    --purple: #c084fc;
+    --purple-dim: rgba(192,132,252,0.12);
+    --border: rgba(0,255,106,0.08);
+    --border-muted: rgba(255,255,255,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Instrument Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    line-height: 1.6;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 680px;
+  }
+
+  /* Demo banner */
+  .demo-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(255,184,0,0.06);
+    border: 1px solid rgba(255,184,0,0.2);
+    border-radius: 3px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--amber);
+    letter-spacing: 0.06em;
+  }
+  .demo-banner-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--amber);
+    animation: pulse-amber 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse-amber { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+  /* Card */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  /* Screens */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ===== START SCREEN ===== */
+  .start-header {
+    padding: 2.5rem 2.5rem 2rem;
+    border-bottom: 1px solid var(--border-muted);
+  }
+  .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .brand::before { content: '//'; color: var(--green-dim); }
+  .start-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+  }
+  .start-title em { font-style: italic; color: var(--green); }
+  .start-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 500px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border-muted);
+    border-top: 1px solid var(--border-muted);
+    border-bottom: 1px solid var(--border-muted);
+  }
+  .stat-box {
+    background: var(--bg-card);
+    padding: 1.5rem 2rem;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .stat-val.green { color: var(--green); text-shadow: 0 0 16px rgba(0,255,106,0.3); }
+  .stat-val.amber { color: var(--amber); }
+  .stat-val.muted { color: var(--text-muted); }
+  .stat-lbl {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+
+  .start-body {
+    padding: 2rem 2.5rem 2.5rem;
+  }
+  .how-it-works {
+    margin-bottom: 2rem;
+  }
+  .how-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+  }
+  .how-items {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+  .how-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+  .how-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    letter-spacing: 0.04em;
+  }
+  .how-badge.blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(77,166,255,0.2); }
+  .how-badge.purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(192,132,252,0.2); }
+  .how-badge.amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,184,0,0.2); }
+
+  .start-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2rem;
+    background: var(--green);
+    color: #050505;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { box-shadow: 0 0 24px rgba(0,255,106,0.35); transform: translateY(-1px); }
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.5rem;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1.5px solid rgba(106,106,106,0.3);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(180,180,180,0.4); }
+
+  /* ===== QUIZ SCREEN ===== */
+  .quiz-header {
+    padding: 1.5rem 2rem 1rem;
+    border-bottom: 1px solid var(--border-muted);
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .q-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .type-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+  }
+  .type-badge.def { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(77,166,255,0.2); }
+  .type-badge.ctx { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(192,132,252,0.2); }
+  .type-badge.write { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,184,0,0.2); }
+
+  .progress-bar-wrap {
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px rgba(0,255,106,0.5);
+  }
+
+  .quiz-body {
+    padding: 2rem 2rem 2.5rem;
+  }
+  .word-display {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.8rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+    line-height: 1.1;
+  }
+  .word-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1.75rem;
+  }
+  .question-text {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .question-text strong { color: var(--text); }
+
+  /* MC Options */
+  .mc-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .mc-btn {
+    width: 100%;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    background: var(--bg-raised);
+    border: 1.5px solid var(--border-muted);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1.5;
+  }
+  .mc-btn:not(.locked):hover {
+    border-color: rgba(0,255,106,0.3);
+    background: rgba(0,255,106,0.04);
+    transform: translateX(3px);
+  }
+  .mc-btn.correct {
+    background: rgba(0,255,106,0.08);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .mc-btn.wrong {
+    background: var(--red-dim);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .mc-btn.locked { cursor: default; }
+
+  /* Write input */
+  .write-field {
+    width: 100%;
+    min-height: 110px;
+    background: var(--bg-raised);
+    border: 1.5px solid var(--border-muted);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 1rem;
+    resize: vertical;
+    line-height: 1.6;
+    transition: border-color 0.2s;
+  }
+  .write-field:focus {
+    outline: none;
+    border-color: rgba(0,255,106,0.3);
+  }
+  .write-field::placeholder { color: var(--text-dim); }
+  .write-submit {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Spinner */
+  .spinner-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    margin-top: 1rem;
+    display: none;
+  }
+  .spinner-wrap.show { display: flex; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(0,255,106,0.15);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== FEEDBACK SCREEN ===== */
+  .feedback-header {
+    padding: 1.5rem 2rem 1rem;
+    border-bottom: 1px solid var(--border-muted);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .result-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .result-icon.correct { background: rgba(0,255,106,0.12); color: var(--green); border: 1.5px solid rgba(0,255,106,0.3); }
+  .result-icon.wrong { background: var(--red-dim); color: var(--red); border: 1.5px solid rgba(255,68,68,0.3); }
+  .result-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .result-label.correct { color: var(--green); }
+  .result-label.wrong { color: var(--red); }
+  .result-word {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+  }
+
+  .feedback-body {
+    padding: 1.75rem 2rem 2rem;
+  }
+  .feedback-word-big {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.6rem;
+  }
+  .feedback-def {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--green-dim);
+  }
+  .feedback-example {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .mock-ai-note {
+    display: flex;
+    gap: 0.6rem;
+    background: var(--amber-dim);
+    border: 1px solid rgba(255,184,0,0.15);
+    border-radius: 3px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.78rem;
+    color: #c8960a;
+    line-height: 1.5;
+  }
+  .mock-ai-note-icon {
+    flex-shrink: 0;
+    font-style: normal;
+    margin-top: 0.05rem;
+  }
+
+  .feedback-footer {
+    padding: 1.25rem 2rem;
+    border-top: 1px solid var(--border-muted);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* ===== SUMMARY SCREEN ===== */
+  .summary-header {
+    padding: 2.5rem 2.5rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-muted);
+  }
+  .summary-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .summary-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    margin-bottom: 0.4rem;
+  }
+  .summary-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--green);
+    text-shadow: 0 0 24px rgba(0,255,106,0.4);
+    display: block;
+    margin-bottom: 0.25rem;
+    line-height: 1;
+  }
+  .summary-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .summary-breakdown {
+    padding: 1.5rem 2rem;
+  }
+  .breakdown-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+  }
+  .breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.9rem;
+    background: var(--bg-raised);
+    border-radius: 2px;
+    font-size: 0.83rem;
+  }
+  .breakdown-word {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    flex: 1;
+  }
+  .breakdown-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    min-width: 70px;
+  }
+  .breakdown-result {
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .breakdown-result.ok { color: var(--green); }
+  .breakdown-result.bad { color: var(--red); }
+
+  .summary-footer {
+    padding: 1.25rem 2rem;
+    border-top: 1px solid var(--border-muted);
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Back link */
+  .back-link {
+    text-align: center;
+    margin-top: 1.25rem;
+  }
+  .back-link a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-link a:hover { color: var(--text-muted); }
+
+  @media (max-width: 520px) {
+    body { padding: 1rem 0.75rem; }
+    .start-header, .start-body { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .quiz-body, .quiz-header { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .feedback-body, .feedback-footer, .feedback-header { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .summary-breakdown, .summary-footer, .summary-header { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .word-display { font-size: 2.2rem; }
+    .how-items { grid-template-columns: 1fr; }
+    .start-title { font-size: 2rem; }
+    .stat-box { padding: 1.25rem 1rem; }
+    .stat-val { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="demo-banner">
+    <div class="demo-banner-dot"></div>
+    DEMO MODE &nbsp;·&nbsp; Adaptive engine active &nbsp;·&nbsp; No AI costs
+  </div>
+
+  <div class="card">
+
+    <!-- START SCREEN -->
+    <div id="screen-start" class="screen active">
+      <div class="start-header">
+        <div class="brand">Opticram</div>
+        <h1 class="start-title">Adaptive <em>GRE</em><br>Vocabulary Engine</h1>
+        <p class="start-desc">10 questions per demonstration. The engine tracks every word, promoting and demoting based on your performance so you always practice what you actually need.</p>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-val green" id="stat-mastered">0</span>
+          <div class="stat-lbl">Mastered</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-val amber" id="stat-learning">0</span>
+          <div class="stat-lbl">Learning</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-val muted" id="stat-new">50</span>
+          <div class="stat-lbl">New</div>
+        </div>
+      </div>
+      <div class="start-body">
+        <div class="how-it-works">
+          <div class="how-title">Question types this session</div>
+          <div class="how-items">
+            <div class="how-item"><span class="how-badge blue">DEF ×4</span> Pick the correct definition</div>
+            <div class="how-item"><span class="how-badge purple">CTX ×4</span> Fill in the blank</div>
+            <div class="how-item"><span class="how-badge amber">WRITE ×1</span> Use the word in a sentence</div>
+            <div class="how-item"><span class="how-badge amber">WRITE ×1</span> Write the definition</div>
+          </div>
+        </div>
+        <div class="start-actions">
+          <button class="btn-primary" onclick="App.startSession()">
+            Start Session →
+          </button>
+          <button class="btn-ghost" onclick="App.resetProgress()">
+            Reset Progress
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="screen-quiz" class="screen">
+      <div class="quiz-header">
+        <div class="progress-meta">
+          <span class="q-counter" id="q-counter">Question 1 of 10</span>
+          <span class="type-badge def" id="type-badge">Definition</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-bar" style="width:10%"></div>
+        </div>
+      </div>
+      <div class="quiz-body">
+        <div class="word-display" id="q-word">aberrant</div>
+        <div class="word-meta" id="q-word-meta">GRE Vocabulary</div>
+        <div class="question-text" id="q-text"></div>
+        <div id="q-mc-options" class="mc-options"></div>
+        <div id="q-write-area" style="display:none">
+          <textarea class="write-field" id="q-write-input" placeholder="Type your response here..."></textarea>
+          <div class="write-submit">
+            <button class="btn-primary" id="q-write-submit" onclick="App.submitWrite()">Submit →</button>
+          </div>
+          <div class="spinner-wrap" id="q-spinner">
+            <div class="spinner"></div>
+            Analyzing your response...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEEDBACK SCREEN -->
+    <div id="screen-feedback" class="screen">
+      <div class="feedback-header">
+        <div class="result-icon correct" id="fb-icon">✓</div>
+        <div>
+          <div class="result-label correct" id="fb-label">Correct</div>
+          <div class="result-word" id="fb-word-sub"></div>
+        </div>
+      </div>
+      <div class="feedback-body">
+        <div class="feedback-word-big" id="fb-word"></div>
+        <div class="feedback-def" id="fb-def"></div>
+        <div class="feedback-example" id="fb-example"></div>
+        <div class="mock-ai-note" id="fb-mock-note" style="display:none">
+          <span class="mock-ai-note-icon">⚡</span>
+          <span>In the full app, AI evaluates grammar, word usage, and contextual accuracy, providing detailed feedback on your writing.</span>
+        </div>
+      </div>
+      <div class="feedback-footer">
+        <button class="btn-primary" onclick="App.nextQuestion()">
+          Next →
+        </button>
+      </div>
+    </div>
+
+    <!-- SUMMARY SCREEN -->
+    <div id="screen-summary" class="screen">
+      <div class="summary-header">
+        <span class="summary-icon" id="sum-icon">🎯</span>
+        <div class="summary-title">Session Complete</div>
+        <span class="summary-pct" id="sum-pct">80%</span>
+        <div class="summary-sub" id="sum-sub">8 of 10 correct</div>
+      </div>
+      <div class="summary-breakdown">
+        <div class="breakdown-title">Question breakdown</div>
+        <div class="breakdown-list" id="sum-breakdown"></div>
+      </div>
+      <div class="summary-footer">
+        <button class="btn-primary" onclick="App.goStart()">Back to Start →</button>
+      </div>
+    </div>
+
+  </div><!-- /card -->
+
+  <div class="back-link">
+    <a href="index.html">← Back to BYTENAIT</a>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ============================================================
+// WORD BANK — 50 GRE words
+// ============================================================
+const WORD_BANK = [
+  { word:'aberrant', definition:'Departing from an accepted standard; deviating from what is normal or expected.', short_def:'Deviating from the norm', example:'The scientist noted the ___ results and repeated the experiment three times.' },
+  { word:'abscond', definition:'To leave hurriedly and secretly, typically to escape from legal custody or avoid consequences.', short_def:'To flee secretly', example:'The embezzler tried to ___ with the funds before the audit was complete.' },
+  { word:'acrimony', definition:'Bitterness or ill-feeling, especially in speech or manner.', short_def:'Sharp bitterness', example:'The divorce proceedings were marked by surprising ___, given the couple had once seemed devoted.' },
+  { word:'adumbrate', definition:'To indicate or describe in outline; to foreshadow or overshadow.', short_def:'To outline or foreshadow', example:'The opening chapter seemed to ___ the tragic events that would unfold later in the novel.' },
+  { word:'aesthetic', definition:'Concerned with beauty or the appreciation of beauty; pleasing in appearance.', short_def:'Relating to beauty', example:'Her ___ sensibility was apparent in every detail of the gallery\'s interior design.' },
+  { word:'alacrity', definition:'Brisk and cheerful readiness; enthusiastic willingness.', short_def:'Eager willingness', example:'He accepted the challenging assignment with ___, eager to prove himself.' },
+  { word:'ambivalent', definition:'Having mixed feelings or contradictory ideas about something or someone.', short_def:'Having mixed feelings', example:'She felt ___ about the promotion, excited by the opportunity yet anxious about the added pressure.' },
+  { word:'ameliorate', definition:'To make something bad or unsatisfactory better; to improve.', short_def:'To improve something bad', example:'The new policy was designed to ___ the harsh living conditions in the facility.' },
+  { word:'anachronism', definition:'A thing or person belonging to a period other than that in which it exists; chronologically out of place.', short_def:'Something out of its time', example:'A horse-drawn carriage in a modern city street is an obvious ___.' },
+  { word:'anodyne', definition:'Not likely to cause offence or disagreement; unlikely to provoke strong feeling; also: a painkilling drug.', short_def:'Inoffensive; painkilling', example:'The politician gave an ___ response that satisfied no one but offended no one either.' },
+  { word:'antipathy', definition:'A deep-seated feeling of aversion or dislike; strong opposition.', short_def:'Strong dislike', example:'His lifelong ___ toward dishonesty made it impossible for him to work with the corrupt official.' },
+  { word:'apocryphal', definition:'Of doubtful authenticity; widely circulated but not demonstrably true.', short_def:'Of doubtful authenticity', example:'The story of Washington chopping down the cherry tree is likely ___.' },
+  { word:'approbation', definition:'Approval or praise, especially formal or official approval.', short_def:'Official approval', example:'The design received the committee\'s ___ before construction could begin.' },
+  { word:'arcane', definition:'Understood by few; mysterious or secret; requiring special knowledge.', short_def:'Known by very few', example:'The manuscript contained ___ symbols that only a handful of scholars could interpret.' },
+  { word:'arduous', definition:'Involving or requiring strenuous effort; difficult and tiring.', short_def:'Extremely difficult', example:'The climbers found the final ascent particularly ___ in the thinning mountain air.' },
+  { word:'assuage', definition:'To make an unpleasant feeling less intense; to appease or relieve.', short_def:'To relieve or soothe', example:'She tried to ___ her guilt by donating generously to the charity.' },
+  { word:'audacious', definition:'Showing a willingness to take surprisingly bold risks; showing impudent lack of respect.', short_def:'Recklessly bold', example:'The CEO made the ___ decision to pivot the entire company\'s strategy overnight.' },
+  { word:'banal', definition:'So lacking in originality as to be obvious and boring; trite.', short_def:'Boring and obvious', example:'The speech was so ___ that half the audience had fallen asleep before it ended.' },
+  { word:'belligerent', definition:'Hostile and aggressive; engaged in a war or conflict.', short_def:'Hostile and aggressive', example:'The ___ neighbor confronted every delivery driver who parked even briefly in front of his house.' },
+  { word:'bombastic', definition:'High-sounding language with little meaning; inflated; using pompous, inflated speech.', short_def:'Pompous and inflated speech', example:'His ___ speech was full of grand promises but contained almost no concrete plans.' },
+  { word:'burgeon', definition:'To begin to grow or increase rapidly; to flourish.', short_def:'To grow rapidly', example:'The city\'s tech scene began to ___ after the new university opened its engineering campus.' },
+  { word:'cacophony', definition:'A harsh, discordant mixture of sounds; dissonant noise.', short_def:'Harsh mixed sounds', example:'The construction site produced a ___ of jackhammers and steel girders crashing together.' },
+  { word:'calumny', definition:'The making of false and defamatory statements about someone; slander.', short_def:'Slander; false statements', example:'The politician endured vicious ___ during the campaign, with opponents spreading outright lies.' },
+  { word:'capricious', definition:'Given to sudden and unaccountable changes of mood or behavior; impulsive; unpredictable.', short_def:'Unpredictably changeable', example:'The ___ weather on the coast made it difficult to plan outdoor events.' },
+  { word:'chicanery', definition:'The use of trickery to achieve a political, financial, or legal purpose; deceptive tactics.', short_def:'Trickery and deception', example:'The defense attorney exposed the prosecutor\'s ___ during cross-examination.' },
+  { word:'cogent', definition:'Clear, logical, and convincing; having power to compel belief.', short_def:'Convincingly logical', example:'She made a ___ argument for restructuring the department, citing three years of efficiency data.' },
+  { word:'commensurate', definition:'Corresponding in size or degree; proportionate; in keeping with.', short_def:'Proportionate to', example:'The salary offered was ___ with her decade of industry experience.' },
+  { word:'contentious', definition:'Causing or likely to cause an argument; controversial; prone to argument.', short_def:'Causing argument', example:'The ___ proposal to rezone the historic district drew hundreds of protestors.' },
+  { word:'contrite', definition:'Feeling or expressing remorse at the recognition of wrongdoing; penitent.', short_def:'Sincerely remorseful', example:'He was genuinely ___ about his behavior and apologized without making excuses.' },
+  { word:'cupidity', definition:'Greed for money or possessions; excessive desire for wealth.', short_def:'Extreme greed', example:'His ___ eventually led to his downfall when the financial fraud was uncovered.' },
+  { word:'deleterious', definition:'Causing harm or damage; injurious to health or well-being.', short_def:'Causing harm', example:'The ___ effects of prolonged screen exposure on sleep quality are well-documented.' },
+  { word:'diffident', definition:'Modest or shy because of a lack of self-confidence; tentative in approaching others.', short_def:'Shy and self-doubting', example:'Despite her impressive credentials, she remained ___ during interviews and rarely spoke up.' },
+  { word:'dilettante', definition:'A person who cultivates an area of interest superficially; an amateur who dabbles.', short_def:'A superficial dabbler', example:'Critics dismissed him as a ___, pointing out that he\'d published one article in the field.' },
+  { word:'dissonance', definition:'Lack of harmony among musical notes; tension or clash between ideas, values, or elements.', short_def:'Lack of harmony', example:'There was clear ___ between the company\'s stated values and its actual business practices.' },
+  { word:'ebullient', definition:'Cheerful and full of energy; exuberant; bubbling with enthusiasm.', short_def:'Overflowing with enthusiasm', example:'The ___ coach rallied her team at halftime, turning a losing game into a decisive victory.' },
+  { word:'enervate', definition:'To make someone feel drained of energy or vitality; to weaken.', short_def:'To drain of energy', example:'The relentless summer heat began to ___ even the most enthusiastic volunteers.' },
+  { word:'equivocate', definition:'To use ambiguous language to conceal the truth or avoid commitment; to be deliberately vague.', short_def:'To be deliberately vague', example:'When asked about the missing funds, the treasurer began to ___, giving non-answers.' },
+  { word:'exacerbate', definition:'To make a problem, bad situation, or negative feeling worse; to aggravate.', short_def:'To make worse', example:'The lack of communication only served to ___ tensions between the two departments.' },
+  { word:'fatuous', definition:'Silly and pointless; complacently foolish; self-satisfied without intelligence.', short_def:'Complacently foolish', example:'His ___ grin after the disastrous presentation suggested he had no idea how badly it had gone.' },
+  { word:'garrulous', definition:'Excessively talkative, especially on trivial matters; rambling.', short_def:'Excessively talkative', example:'The ___ vendor kept the tourists detained at his stall for nearly an hour.' },
+  { word:'iconoclast', definition:'A person who attacks or criticizes cherished beliefs or institutions; a non-conformist.', short_def:'One who challenges norms', example:'The architect was an ___ who rejected every classical convention of his era.' },
+  { word:'implacable', definition:'Unable to be placated or appeased; relentless; not capable of being changed.', short_def:'Impossible to appease', example:'The ___ judge refused every appeal, citing the unambiguous language of the statute.' },
+  { word:'insidious', definition:'Proceeding in a gradual, subtle way but with harmful effects; treacherous.', short_def:'Gradually and subtly harmful', example:'The ___ spread of misinformation happened slowly until it dominated public opinion.' },
+  { word:'laconic', definition:'Using very few words; brief and concise in speech or expression.', short_def:'Using very few words', example:'His ___ reply of simply "No" ended the discussion more effectively than any argument could.' },
+  { word:'loquacious', definition:'Tending to talk a great deal; talkative; verbose.', short_def:'Very talkative', example:'The ___ professor rarely finished a lecture on time, always launching into tangential stories.' },
+  { word:'mendacious', definition:'Not telling the truth; lying; given to deception.', short_def:'Habitually lying', example:'The ___ witness contradicted himself three times under cross-examination.' },
+  { word:'obdurate', definition:'Stubbornly refusing to change one\'s opinion or course of action; hardened against persuasion.', short_def:'Stubbornly unyielding', example:'Despite overwhelming evidence, the ___ defendant refused to alter his account of events.' },
+  { word:'perfidious', definition:'Deceitful and untrustworthy; guilty of betrayal; treacherous.', short_def:'Treacherously disloyal', example:'The ___ advisor had been sharing company secrets with a rival firm for two years.' },
+  { word:'sycophant', definition:'A person who acts obsequiously toward someone important in order to gain advantage; a flatterer.', short_def:'A self-serving flatterer', example:'Every ___ in the boardroom applauded the CEO\'s flawed idea rather than risk her displeasure.' },
+  { word:'turpitude', definition:'Wickedness and moral depravity; inherently immoral behavior or character.', short_def:'Moral wickedness', example:'The charges of moral ___ ended his political career before it had truly begun.' },
+];
+
+// ============================================================
+// STORAGE
+// ============================================================
+const Storage = {
+  KEY: 'opticram_scores',
+  load() {
+    try {
+      const raw = localStorage.getItem(this.KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch { return {}; }
+  },
+  save(scores) {
+    try { localStorage.setItem(this.KEY, JSON.stringify(scores)); } catch {}
+  },
+  reset() {
+    try { localStorage.removeItem(this.KEY); } catch {}
+  }
+};
+
+// ============================================================
+// ADAPTIVE ENGINE
+// ============================================================
+const AdaptiveEngine = {
+  categorize(scores) {
+    const mastered = [], learning = [], newWords = [];
+    WORD_BANK.forEach(w => {
+      const s = scores[w.word];
+      if (s === undefined || s === null) newWords.push(w);
+      else if (s >= 3) mastered.push(w);
+      else learning.push(w);
+    });
+    return { mastered, learning, newWords };
+  },
+
+  selectWords(scores, count = 10) {
+    const { mastered, learning, newWords } = this.categorize(scores);
+
+    const shuffle = arr => {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+
+    const sMastered = shuffle(mastered);
+    const sLearning = shuffle(learning);
+    const sNew = shuffle(newWords);
+
+    let nLearning = Math.round(count * 0.5);
+    let nNew = Math.round(count * 0.3);
+    let nMastered = count - nLearning - nNew;
+
+    // Fill shortages from new
+    if (sLearning.length < nLearning) {
+      const deficit = nLearning - sLearning.length;
+      nLearning = sLearning.length;
+      nNew = Math.min(sNew.length, nNew + deficit);
+    }
+    if (sMastered.length < nMastered) {
+      const deficit = nMastered - sMastered.length;
+      nMastered = sMastered.length;
+      nNew = Math.min(sNew.length, nNew + deficit);
+    }
+
+    const selected = [
+      ...sLearning.slice(0, nLearning),
+      ...sNew.slice(0, nNew),
+      ...sMastered.slice(0, nMastered)
+    ];
+
+    // If still short, fill with new
+    while (selected.length < count && sNew.length > selected.length) {
+      const candidate = sNew[selected.length];
+      if (!selected.includes(candidate)) selected.push(candidate);
+    }
+
+    return shuffle(selected.slice(0, count));
+  }
+};
+
+// ============================================================
+// QUESTION FACTORY
+// ============================================================
+const QuestionFactory = {
+  assignTypes(words) {
+    // Fixed distribution per spec: 4 def, 4 ctx, 1 write-sentence, 1 write-def
+    const types = ['def','def','def','def','ctx','ctx','ctx','ctx','write-sentence','write-def'];
+    const shuffled = [...types].sort(() => Math.random() - 0.5);
+    return words.map((w, i) => ({ word: w, type: shuffled[i] }));
+  },
+
+  buildQuestion(wordObj, type, allWords) {
+    switch (type) {
+      case 'def': return this._buildDef(wordObj, allWords);
+      case 'ctx': return this._buildCtx(wordObj, allWords);
+      case 'write-sentence': return this._buildWriteSentence(wordObj);
+      case 'write-def': return this._buildWriteDef(wordObj);
+    }
+  },
+
+  _buildDef(wordObj, allWords) {
+    const distractors = this._getDistractors(wordObj, allWords, 3);
+    const options = this._shuffle([wordObj, ...distractors]).map(w => w.definition);
+    return {
+      type: 'def',
+      prompt: 'Which of the following best defines this word?',
+      options,
+      correctIndex: options.indexOf(wordObj.definition)
+    };
+  },
+
+  _buildCtx(wordObj, allWords) {
+    const distractors = this._getDistractors(wordObj, allWords, 3);
+    const options = this._shuffle([wordObj, ...distractors]).map(w => w.word);
+    return {
+      type: 'ctx',
+      prompt: wordObj.example,
+      options,
+      correctIndex: options.indexOf(wordObj.word)
+    };
+  },
+
+  _buildWriteSentence(wordObj) {
+    return {
+      type: 'write-sentence',
+      prompt: `Write an original sentence using the word <strong>${wordObj.word}</strong>.`,
+      placeholder: `e.g., "The ___ behavior of the new employee alarmed her coworkers."`
+    };
+  },
+
+  _buildWriteDef(wordObj) {
+    return {
+      type: 'write-def',
+      prompt: `In your own words, write a definition for <strong>${wordObj.word}</strong>.`,
+      placeholder: 'Write your definition here...'
+    };
+  },
+
+  _getDistractors(target, allWords, count) {
+    const pool = allWords.filter(w => w.word !== target.word);
+    return this._shuffle(pool).slice(0, count);
+  },
+
+  _shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+};
+
+// ============================================================
+// MOCK GRADER
+// ============================================================
+const MockGrader = {
+  grade(text) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+        resolve(words.length >= 5);
+      }, 1200);
+    });
+  }
+};
+
+// ============================================================
+// APP STATE
+// ============================================================
+const AppState = {
+  scores: {},
+  session: {
+    questions: [],   // [{word, type, question}]
+    answers: [],     // [{correct, userAnswer}]
+    current: 0
+  }
+};
+
+// ============================================================
+// SCREEN MANAGER
+// ============================================================
+const ScreenManager = {
+  show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+  },
+
+  renderStart() {
+    const { mastered, learning, newWords } = AdaptiveEngine.categorize(AppState.scores);
+    document.getElementById('stat-mastered').textContent = mastered.length;
+    document.getElementById('stat-learning').textContent = learning.length;
+    document.getElementById('stat-new').textContent = newWords.length;
+    this.show('start');
+  },
+
+  renderQuiz() {
+    const { questions, current } = AppState.session;
+    const q = questions[current];
+    const total = questions.length;
+    const idx = current + 1;
+
+    // Progress
+    document.getElementById('q-counter').textContent = `Question ${idx} of ${total}`;
+    document.getElementById('progress-bar').style.width = `${(idx / total) * 100}%`;
+
+    // Type badge
+    const badge = document.getElementById('type-badge');
+    const typeMap = {
+      'def': ['def', 'Definition'],
+      'ctx': ['ctx', 'Context'],
+      'write-sentence': ['write', 'Write: Sentence'],
+      'write-def': ['write', 'Write: Definition']
+    };
+    const [cls, label] = typeMap[q.type] || ['def', q.type];
+    badge.className = 'type-badge ' + cls;
+    badge.textContent = label;
+
+    // Word
+    document.getElementById('q-word').textContent = q.word.word;
+    document.getElementById('q-word-meta').textContent = 'GRE Vocabulary';
+
+    // Question text
+    const qTextEl = document.getElementById('q-text');
+    qTextEl.innerHTML = q.question.prompt || '';
+
+    // MC vs Write
+    const mcEl = document.getElementById('q-mc-options');
+    const writeEl = document.getElementById('q-write-area');
+
+    if (q.type === 'def' || q.type === 'ctx') {
+      writeEl.style.display = 'none';
+      mcEl.style.display = 'flex';
+      mcEl.innerHTML = '';
+      q.question.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'mc-btn';
+        btn.textContent = opt;
+        btn.addEventListener('click', () => App.selectMC(i));
+        mcEl.appendChild(btn);
+      });
+    } else {
+      mcEl.style.display = 'none';
+      writeEl.style.display = 'block';
+      const input = document.getElementById('q-write-input');
+      input.value = '';
+      input.placeholder = q.question.placeholder || 'Type your response here...';
+      document.getElementById('q-spinner').classList.remove('show');
+      document.getElementById('q-write-submit').disabled = false;
+    }
+
+    this.show('quiz');
+  },
+
+  renderFeedback(correct, wordObj, type, isMockGraded) {
+    const icon = document.getElementById('fb-icon');
+    const label = document.getElementById('fb-label');
+    icon.className = 'result-icon ' + (correct ? 'correct' : 'wrong');
+    icon.textContent = correct ? '✓' : '✗';
+    label.className = 'result-label ' + (correct ? 'correct' : 'wrong');
+    label.textContent = correct ? 'Correct' : 'Incorrect';
+    document.getElementById('fb-word-sub').textContent = wordObj.word;
+    document.getElementById('fb-word').textContent = wordObj.word;
+    document.getElementById('fb-def').textContent = wordObj.definition;
+    document.getElementById('fb-example').textContent = '"' + wordObj.example.replace('___', wordObj.word) + '"';
+    const note = document.getElementById('fb-mock-note');
+    note.style.display = isMockGraded ? 'flex' : 'none';
+    this.show('feedback');
+  },
+
+  renderSummary() {
+    const { questions, answers } = AppState.session;
+    const correct = answers.filter(a => a.correct).length;
+    const total = answers.length;
+    const pct = Math.round((correct / total) * 100);
+
+    document.getElementById('sum-icon').textContent = pct >= 80 ? '🎯' : pct >= 50 ? '📈' : '💪';
+    document.getElementById('sum-pct').textContent = pct + '%';
+    document.getElementById('sum-sub').textContent = `${correct} of ${total} correct`;
+
+    const list = document.getElementById('sum-breakdown');
+    list.innerHTML = '';
+    questions.forEach((q, i) => {
+      const ans = answers[i];
+      const item = document.createElement('div');
+      item.className = 'breakdown-item';
+      const typeShort = { 'def':'Definition','ctx':'Context','write-sentence':'Sentence','write-def':'Definition Write' };
+      item.innerHTML = `
+        <span class="breakdown-word">${q.word.word}</span>
+        <span class="breakdown-type">${typeShort[q.type] || q.type}</span>
+        <span class="breakdown-result ${ans.correct ? 'ok' : 'bad'}">${ans.correct ? '✓' : '✗'}</span>
+      `;
+      list.appendChild(item);
+    });
+
+    this.show('summary');
+  }
+};
+
+// ============================================================
+// MAIN APP
+// ============================================================
+const App = {
+  init() {
+    AppState.scores = Storage.load();
+    ScreenManager.renderStart();
+  },
+
+  startSession() {
+    AppState.scores = Storage.load();
+    const words = AdaptiveEngine.selectWords(AppState.scores, 10);
+    const assignments = QuestionFactory.assignTypes(words);
+    AppState.session = {
+      questions: assignments.map(({ word, type }) => ({
+        word,
+        type,
+        question: QuestionFactory.buildQuestion(word, type, WORD_BANK)
+      })),
+      answers: [],
+      current: 0
+    };
+    ScreenManager.renderQuiz();
+  },
+
+  selectMC(selectedIdx) {
+    const { questions, current } = AppState.session;
+    const q = questions[current];
+    const correct = selectedIdx === q.question.correctIndex;
+
+    // Lock and color buttons
+    const btns = document.querySelectorAll('.mc-btn');
+    btns.forEach((btn, i) => {
+      btn.classList.add('locked');
+      if (i === q.question.correctIndex) btn.classList.add('correct');
+      else if (i === selectedIdx && !correct) btn.classList.add('wrong');
+    });
+
+    // Update score
+    this._updateScore(q.word.word, correct);
+    AppState.session.answers.push({ correct, word: q.word.word });
+
+    // Brief pause then feedback
+    setTimeout(() => {
+      ScreenManager.renderFeedback(correct, q.word, q.type, false);
+    }, 650);
+  },
+
+  async submitWrite() {
+    const input = document.getElementById('q-write-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const submitBtn = document.getElementById('q-write-submit');
+    const spinner = document.getElementById('q-spinner');
+    submitBtn.disabled = true;
+    input.disabled = true;
+    spinner.classList.add('show');
+
+    const correct = await MockGrader.grade(text);
+
+    const { questions, current } = AppState.session;
+    const q = questions[current];
+    this._updateScore(q.word.word, correct);
+    AppState.session.answers.push({ correct, word: q.word.word });
+
+    spinner.classList.remove('show');
+    ScreenManager.renderFeedback(correct, q.word, q.type, true);
+  },
+
+  nextQuestion() {
+    AppState.session.current++;
+    if (AppState.session.current >= AppState.session.questions.length) {
+      ScreenManager.renderSummary();
+    } else {
+      ScreenManager.renderQuiz();
+    }
+  },
+
+  goStart() {
+    AppState.scores = Storage.load();
+    ScreenManager.renderStart();
+  },
+
+  resetProgress() {
+    if (confirm('Reset all progress? This will return all 50 words to New.')) {
+      Storage.reset();
+      AppState.scores = {};
+      ScreenManager.renderStart();
+    }
+  },
+
+  _updateScore(word, correct) {
+    const current = AppState.scores[word] !== undefined ? AppState.scores[word] : null;
+    let next;
+    if (current === null) next = correct ? 1 : -1;
+    else next = correct ? current + 1 : current - 1;
+    next = Math.max(-3, next);
+    AppState.scores[word] = next;
+    Storage.save(AppState.scores);
+  }
+};
+
+// Boot
+App.init();
+</script>
+</body>
+</html>
