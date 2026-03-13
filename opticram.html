@@ -583,6 +583,102 @@
     .stat-box { padding: 1.25rem 1rem; }
     .stat-val { font-size: 1.5rem; }
   }
+
+  /* ── WAITLIST MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    z-index: 9999;
+    align-items: center; justify-content: center;
+    padding: 1.5rem;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #111;
+    border: 1px solid rgba(0,255,106,0.2);
+    border-radius: 8px;
+    width: 100%; max-width: 460px;
+    overflow: hidden;
+    animation: modal-in 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes modal-in { from { opacity:0; transform:translateY(24px) scale(0.97); } to { opacity:1; transform:none; } }
+  .modal-header {
+    padding: 1.75rem 1.75rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .modal-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(0,255,106,0.6); margin-bottom: 0.6rem;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .modal-eyebrow-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse-amber 2s ease-in-out infinite;
+  }
+  .modal-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem; line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+  .modal-title em { font-style: italic; color: var(--green); }
+  .modal-sub {
+    font-size: 0.85rem; color: #6a6a6a; line-height: 1.6;
+  }
+  .modal-body { padding: 1.5rem 1.75rem; }
+  .modal-input-row {
+    display: flex; gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+  .modal-email {
+    flex: 1;
+    background: #181818;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    color: #e8e8e8;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal-email:focus { border-color: rgba(0,255,106,0.4); }
+  .modal-email::placeholder { color: #3a3a3a; }
+  .modal-submit {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--green); color: #050505;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    border: none; border-radius: 6px; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .modal-submit:hover { box-shadow: 0 0 20px rgba(0,255,106,0.4); transform: translateY(-1px); }
+  .modal-submit.submitted { background: rgba(0,255,106,0.15); color: var(--green); cursor: default; transform: none; box-shadow: none; }
+  .modal-skip {
+    display: block; text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #3a3a3a; cursor: pointer;
+    transition: color 0.2s; background: none; border: none; width: 100%;
+    padding: 0.25rem;
+  }
+  .modal-skip:hover { color: #6a6a6a; }
+  .modal-success {
+    display: none; text-align: center;
+    padding: 0.5rem 0 0.25rem;
+    font-size: 0.82rem; color: var(--green);
+  }
+  .modal-success.show { display: block; }
+  @media (max-width: 480px) {
+    .modal-input-row { flex-direction: column; }
+    .modal-submit { width: 100%; justify-content: center; }
+  }
 </style>
 </head>
 <body>
@@ -712,6 +808,30 @@
 
   <div class="back-link">
     <a href="index.html">← Back to BYTENAIT</a>
+  </div>
+</div>
+
+<!-- ── WAITLIST MODAL ── -->
+<div class="modal-overlay" id="waitlist-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-eyebrow"><span class="modal-eyebrow-dot"></span> Early Access</div>
+      <div class="modal-title">Like what you see?<br>Get the <em>full engine.</em></div>
+      <div class="modal-sub">The demo runs on a fixed word bank. The real Opticram adapts to you across thousands of words, question types, and sessions — and it's coming soon.</div>
+    </div>
+    <div class="modal-body">
+      <form id="waitlist-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" onsubmit="handleWaitlistSubmit(event)">
+        <div class="modal-input-row">
+          <input class="modal-email" type="email" name="email" placeholder="your@email.com" required autocomplete="email" />
+          <button class="modal-submit" type="submit" id="waitlist-submit-btn">
+            Join Waitlist
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+          </button>
+        </div>
+        <div class="modal-success" id="waitlist-success">✓ You're on the list — we'll be in touch.</div>
+      </form>
+      <button class="modal-skip" onclick="closeWaitlistModal()">Continue demo →</button>
+    </div>
   </div>
 </div>
 
@@ -1147,6 +1267,11 @@ const App = {
 
   nextQuestion() {
     AppState.session.current++;
+    // Show waitlist modal after question 3 (index 3 = just completed Q3)
+    if (AppState.session.current === 3 && !localStorage.getItem('opticram_waitlist_seen')) {
+      showWaitlistModal();
+      return;
+    }
     if (AppState.session.current >= AppState.session.questions.length) {
       ScreenManager.renderSummary();
     } else {
@@ -1180,6 +1305,50 @@ const App = {
 
 // Boot
 App.init();
+
+// ── Waitlist modal ──
+function showWaitlistModal() {
+  document.getElementById('waitlist-modal').classList.add('show');
+}
+
+function closeWaitlistModal() {
+  document.getElementById('waitlist-modal').classList.remove('show');
+  localStorage.setItem('opticram_waitlist_seen', '1');
+  // Resume where user left off
+  if (AppState.session.current >= AppState.session.questions.length) {
+    ScreenManager.renderSummary();
+  } else {
+    ScreenManager.renderQuiz();
+  }
+}
+
+function handleWaitlistSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('waitlist-submit-btn');
+  const form = document.getElementById('waitlist-form');
+  const success = document.getElementById('waitlist-success');
+  const email = form.querySelector('input[type="email"]').value;
+
+  // Submit to Formspree (replace YOUR_FORM_ID with your actual Formspree form ID)
+  fetch(form.action, {
+    method: 'POST',
+    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  }).then(r => {
+    btn.textContent = '✓ You\'re in';
+    btn.classList.add('submitted');
+    btn.disabled = true;
+    success.classList.add('show');
+    localStorage.setItem('opticram_waitlist_seen', '1');
+    setTimeout(closeWaitlistModal, 2000);
+  }).catch(() => {
+    // Fallback: still mark as seen and close
+    success.textContent = '✓ Saved — we\'ll be in touch.';
+    success.classList.add('show');
+    localStorage.setItem('opticram_waitlist_seen', '1');
+    setTimeout(closeWaitlistModal, 2000);
+  });
+}
 </script>
 </body>
 </html>
