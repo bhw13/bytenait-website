@@ -563,9 +563,9 @@
     display: none;
     flex-direction: column; justify-content: center; align-items: center;
     gap: 5px;
-    width: 36px; height: 36px;
+    width: 44px; height: 44px;
     background: none; border: none; cursor: pointer; padding: 4px;
-    z-index: 10001;
+    z-index: 10001; flex-shrink: 0;
   }
   .nav-hamburger span {
     display: block; width: 22px; height: 2px;
@@ -596,6 +596,29 @@
     footer { flex-direction: column; align-items: flex-start; gap: 2rem; }
     .footer-links { flex-wrap: wrap; }
     .mission-statement { font-size: clamp(1.3rem, 4vw, 1.8rem); }
+
+    /* Hamburger nav */
+    .nav-hamburger { display: flex; }
+    .nav-links {
+      display: none;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 2.2rem;
+      background: rgba(5,5,5,0.97);
+      backdrop-filter: blur(20px);
+      z-index: 10000;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a {
+      font-size: 1.5rem; font-weight: 600;
+      color: var(--text); padding: 0.5rem 1rem;
+    }
+    .nav-links a:hover { color: var(--green); }
+    .nav-links .nav-cta {
+      font-size: 1rem !important;
+      padding: 0.85rem 2.5rem !important;
+      margin-top: 0.5rem;
+    }
   }
 
   @media (max-width: 600px) {
@@ -609,31 +632,8 @@
   }
 
   @media (max-width: 480px) {
-    /* Hamburger replaces nav links */
-    .nav-hamburger { display: flex; }
-    .nav-links {
-      display: none;
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      flex-direction: column; align-items: center; justify-content: center;
-      gap: 2rem;
-      background: rgba(5,5,5,0.97);
-      backdrop-filter: blur(20px);
-      z-index: 10000;
-    }
-    .nav-links.open { display: flex; }
-    .nav-links a {
-      font-size: 1.4rem; font-weight: 600;
-      color: var(--text);
-    }
-    .nav-links .nav-cta {
-      font-size: 1rem !important;
-      padding: 0.75rem 2.5rem !important;
-    }
     .hero h1 { font-size: clamp(2.2rem, 10vw, 3rem); }
-    .who-stats { grid-template-columns: 1fr 1fr; }
     .stat-number { font-size: 1.6rem; }
-    .products-grid { grid-template-columns: 1fr; }
-    .invest-metrics { grid-template-columns: 1fr 1fr; }
     section { padding: 3.5rem 1.25rem; }
     .section-title { font-size: clamp(1.5rem, 7vw, 2rem); }
     footer { padding: 3rem 1.25rem; }
